@@ -1,24 +1,4 @@
 {
     "version": "1.0.0",
-    "dependencies": {
-        "49347": {
-            "id": 49347,
-            "name": "SVG Captcha",
-            "slug": "svg-captcha",
-            "required": true,
-            "version": "1.0.0",
-            "type": "plugin",
-            "open": false,
-            "thumbnail": "https:\/\/wp2e.recuweb.com\/c\/s\/wprew\/p\/live-template-editor-client\/assets\/images\/default_item.png",
-            "information": "https:\/\/code.recuweb.com",
-            "description": "Validate your forms with a self hosted SVG Captcha.",
-            "parents": [],
-            "children": [],
-            "package": {
-                "name": "hlashbrooke \/ WordPress-Plugin-Template",
-                "id": 74772
-            },
-            "force_deactivation": false
-        }
-    }
+    "dependencies": []
 }

@@ -123,7 +123,10 @@ class SVG_Captcha_Settings {
 	 * @return mixed|void
 	 */
 	private function menu_settings() {
+		
+		/*
 		return apply_filters(
+		
 			$this->base . 'menu_settings',
 			array(
 				'location'    => 'options', // Possible settings: options, menu, submenu.
@@ -137,6 +140,7 @@ class SVG_Captcha_Settings {
 				'position'    => null,
 			)
 		);
+		*/
 	}
 
 	/**
@@ -188,7 +192,8 @@ class SVG_Captcha_Settings {
 	 * @return array Fields to be displayed on settings page
 	 */
 	private function settings_fields() {
-
+	
+		/*
 		$settings['standard'] = array(
 			'title'       => __( 'Standard', 'svg-captcha' ),
 			'description' => __( 'These are fairly standard form input fields.', 'svg-captcha' ),
@@ -313,7 +318,8 @@ class SVG_Captcha_Settings {
 				),
 			),
 		);
-
+		*/
+		
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
 		return $settings;

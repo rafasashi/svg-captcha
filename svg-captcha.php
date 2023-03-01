@@ -24,12 +24,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once 'includes/class-svg-captcha.php';
 require_once 'includes/class-svg-captcha-settings.php';
 
+require_once 'includes/lib/class-svg-captcha-generator.php';
 require_once 'includes/lib/class-svg-captcha-admin-api.php';
 require_once 'includes/lib/class-svg-captcha-post-type.php';
 require_once 'includes/lib/class-svg-captcha-taxonomy.php';
 
 
 function svg_captcha() {
+	
 	$instance = SVG_Captcha::instance( __FILE__, '1.0.0' );
 
 	if ( is_null( $instance->settings ) ) {

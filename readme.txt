@@ -62,8 +62,8 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 == Screenshots ==
 
-1. The language switcher
-2. Edit post type language
-3. Edit tag language
-4. Select activate languages
-5. Select activate post types and taxonomies
+1. SVG Captcha for comments
+2. SVG Captcha for login form
+3. SVG Captcha general settings
+4. SVG Captcha location settings
+5. SVG Captcha customizations

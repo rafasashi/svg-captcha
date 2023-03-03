@@ -1,8 +1,8 @@
 <?php 
 /**
  * Plugin Name: SVG Captcha
- * Plugin URI: https://code.recuweb.com
- * Version: 1.0.2
+ * Plugin URI: https://code.recuweb.com/get/svg-captcha/
+ * Version: 1.0.3
  * Description: Validate your forms with a self hosted SVG Captcha.
  * Author: rafasashi
  * Author URI: https://code.recuweb.com
@@ -14,8 +14,6 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  * Requires WP: 6.1.1
  */
-
-
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

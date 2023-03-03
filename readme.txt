@@ -46,7 +46,7 @@ For all documentation on this plugin go to: [https://code.recuweb.com/get/svg-ca
 
 Automatic installation is the easiest option as WordPress handles the file transfers itself and you don't even need to leave your web browser. To do an automatic install of Language Switcher, log in to your WordPress admin panel, navigate to the Plugins menu and click Add New.
 
-In the search field type "Language Switcher" and click Search Plugins. Once you've found my plugin extension you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking Install Now. After clicking that link you will be asked if you're sure you want to install the plugin. Click yes and WordPress will automatically complete the installation.
+In the search field type "SVG Captcha" and click Search Plugins. Once you've found my plugin extension you can view details about it such as the the point release, rating and description. Most importantly of course, you can install it by simply clicking Install Now. After clicking that link you will be asked if you're sure you want to install the plugin. Click yes and WordPress will automatically complete the installation.
 
 = Manual installation =
 
@@ -59,3 +59,11 @@ The manual installation method involves downloading my plugin and uploading it t
 = Upgrading =
 
 Automatic updates should work like a charm; as always though, ensure you backup your site just in case.
+
+== Screenshots ==
+
+1. The language switcher
+2. Edit post type language
+3. Edit tag language
+4. Select activate languages
+5. Select activate post types and taxonomies

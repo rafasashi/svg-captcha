@@ -72,7 +72,7 @@ EOD;
     public static function getInstance(int $numchars, int $width, int $height, int $difficulty = SVGCaptcha::MEDIUM)
     {
         if (!isset(self::$instance))
-            self::$instance = new SVGCaptcha($numchars, $width, $height, $difficulty);
+            self::$instance = new SVG_Captcha_Generator($numchars, $width, $height, $difficulty);
 
         return self::$instance;
     }

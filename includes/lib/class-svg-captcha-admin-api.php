@@ -78,7 +78,10 @@ class SVG_Captcha_Admin_API {
 		$html = '';
 
 		switch ( $field['type'] ) {
-
+			
+			case 'html':
+				$html .= $data;
+			break;
 			case 'text':
 			case 'url':
 			case 'email':

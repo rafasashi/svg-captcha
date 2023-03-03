@@ -70,13 +70,8 @@ class SVG_Captcha_Settings {
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 
 		// Add settings link to plugins page.
-		add_filter(
-			'plugin_action_links_' . plugin_basename( $this->parent->file ),
-			array(
-				$this,
-				'add_settings_link',
-			)
-		);
+		
+		add_filter('plugin_action_links',array($this,'add_settings_link'),10,2);
 
 		// Configure placement of plugin settings page. See readme for implementation.
 		add_filter( $this->base . 'menu_settings', array( $this, 'configure_settings' ) );
@@ -124,15 +119,14 @@ class SVG_Captcha_Settings {
 	 */
 	private function menu_settings() {
 		
-		/*
 		return apply_filters(
 		
 			$this->base . 'menu_settings',
 			array(
 				'location'    => 'options', // Possible settings: options, menu, submenu.
 				'parent_slug' => 'options-general.php',
-				'page_title'  => __( 'Plugin Settings', 'svg-captcha' ),
-				'menu_title'  => __( 'Plugin Settings', 'svg-captcha' ),
+				'page_title'  => __( 'Captcha Settings', 'svg-captcha' ),
+				'menu_title'  => __( 'Captcha', 'svg-captcha' ),
 				'capability'  => 'manage_options',
 				'menu_slug'   => $this->parent->_token . '_settings',
 				'function'    => array( $this, 'settings_page' ),
@@ -140,7 +134,6 @@ class SVG_Captcha_Settings {
 				'position'    => null,
 			)
 		);
-		*/
 	}
 
 	/**
@@ -180,145 +173,175 @@ class SVG_Captcha_Settings {
 	 * @param  array $links Existing links.
 	 * @return array        Modified links.
 	 */
-	public function add_settings_link( $links ) {
-		$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'svg-captcha' ) . '</a>';
-		array_push( $links, $settings_link );
+	public function add_settings_link( $links, $file ) {
+		if( strpos( $file, basename( $this->parent->file ) ) !== false ) {
+			$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'svg-captcha' ) . '</a>';
+			array_push( $links, $settings_link );
+		}
 		return $links;
 	}
-
+	
+	public function get_fields() {
+		
+		return $this->settings_fields();
+	}
+	
 	/**
 	 * Build settings fields
 	 *
 	 * @return array Fields to be displayed on settings page
 	 */
 	private function settings_fields() {
-	
-		/*
-		$settings['standard'] = array(
-			'title'       => __( 'Standard', 'svg-captcha' ),
-			'description' => __( 'These are fairly standard form input fields.', 'svg-captcha' ),
-			'fields'      => array(
-				array(
-					'id'          => 'text_field',
-					'label'       => __( 'Some Text', 'svg-captcha' ),
-					'description' => __( 'This is a standard text field.', 'svg-captcha' ),
-					'type'        => 'text',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'svg-captcha' ),
-				),
-				array(
-					'id'          => 'password_field',
-					'label'       => __( 'A Password', 'svg-captcha' ),
-					'description' => __( 'This is a standard password field.', 'svg-captcha' ),
-					'type'        => 'password',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'svg-captcha' ),
-				),
-				array(
-					'id'          => 'secret_text_field',
-					'label'       => __( 'Some Secret Text', 'svg-captcha' ),
-					'description' => __( 'This is a secret text field - any data saved here will not be displayed after the page has reloaded, but it will be saved.', 'svg-captcha' ),
-					'type'        => 'text_secret',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text', 'svg-captcha' ),
-				),
-				array(
-					'id'          => 'text_block',
-					'label'       => __( 'A Text Block', 'svg-captcha' ),
-					'description' => __( 'This is a standard text area.', 'svg-captcha' ),
-					'type'        => 'textarea',
-					'default'     => '',
-					'placeholder' => __( 'Placeholder text for this textarea', 'svg-captcha' ),
-				),
-				array(
-					'id'          => 'single_checkbox',
-					'label'       => __( 'An Option', 'svg-captcha' ),
-					'description' => __( 'A standard checkbox - if you save this option as checked then it will store the option as \'on\', otherwise it will be an empty string.', 'svg-captcha' ),
-					'type'        => 'checkbox',
-					'default'     => '',
-				),
-				array(
-					'id'          => 'select_box',
-					'label'       => __( 'A Select Box', 'svg-captcha' ),
-					'description' => __( 'A standard select box.', 'svg-captcha' ),
-					'type'        => 'select',
-					'options'     => array(
-						'drupal'    => 'Drupal',
-						'joomla'    => 'Joomla',
-						'wordpress' => 'WordPress',
-					),
-					'default'     => 'wordpress',
-				),
-				array(
-					'id'          => 'radio_buttons',
-					'label'       => __( 'Some Options', 'svg-captcha' ),
-					'description' => __( 'A standard set of radio buttons.', 'svg-captcha' ),
-					'type'        => 'radio',
-					'options'     => array(
-						'superman' => 'Superman',
-						'batman'   => 'Batman',
-						'ironman'  => 'Iron Man',
-					),
-					'default'     => 'batman',
-				),
-				array(
-					'id'          => 'multiple_checkboxes',
-					'label'       => __( 'Some Items', 'svg-captcha' ),
-					'description' => __( 'You can select multiple items and they will be stored as an array.', 'svg-captcha' ),
-					'type'        => 'checkbox_multi',
-					'options'     => array(
-						'square'    => 'Square',
-						'circle'    => 'Circle',
-						'rectangle' => 'Rectangle',
-						'triangle'  => 'Triangle',
-					),
-					'default'     => array( 'circle', 'triangle' ),
-				),
-			),
-		);
+		
+		$settings = array();
 
-		$settings['extra'] = array(
-			'title'       => __( 'Extra', 'svg-captcha' ),
-			'description' => __( 'These are some extra input fields that maybe aren\'t as common as the others.', 'svg-captcha' ),
+		$settings['general'] = array(
+			'title'       => __( 'General', 'svg-captcha' ),
+			'description' => __( 'Captcha basic settings', 'svg-captcha' ),
 			'fields'      => array(
 				array(
-					'id'          => 'number_field',
-					'label'       => __( 'A Number', 'svg-captcha' ),
-					'description' => __( 'This is a standard number field - if this field contains anything other than numbers then the form will not be submitted.', 'svg-captcha' ),
-					'type'        => 'number',
-					'default'     => '',
-					'placeholder' => __( '42', 'svg-captcha' ),
-				),
-				array(
-					'id'          => 'colour_picker',
-					'label'       => __( 'Pick a colour', 'svg-captcha' ),
-					'description' => __( 'This uses WordPress\' built-in colour picker - the option is stored as the colour\'s hex code.', 'svg-captcha' ),
-					'type'        => 'color',
-					'default'     => '#21759B',
-				),
-				array(
-					'id'          => 'an_image',
-					'label'       => __( 'An Image', 'svg-captcha' ),
-					'description' => __( 'This will upload an image to your media library and store the attachment ID in the option field. Once you have uploaded an imge the thumbnail will display above these buttons.', 'svg-captcha' ),
-					'type'        => 'image',
-					'default'     => '',
-					'placeholder' => '',
-				),
-				array(
-					'id'          => 'multi_select_box',
-					'label'       => __( 'A Multi-Select Box', 'svg-captcha' ),
-					'description' => __( 'A standard multi-select box - the saved data is stored as an array.', 'svg-captcha' ),
-					'type'        => 'select_multi',
-					'options'     => array(
-						'linux'   => 'Linux',
-						'mac'     => 'Mac',
-						'windows' => 'Windows',
+					'id'          	=> 'captcha_difficulty',
+					'label'       	=> __( 'Difficulty', 'svg-captcha' ),
+					'description' 	=> '',
+					'type'        	=> 'select',
+					'options'     	=> array(
+					
+						'easy'		=> 'easy', 
+						'medium'	=> 'medium', 
+						'hard'		=> 'hard',
 					),
-					'default'     => array( 'linux' ),
+					'default'		=> 'easy',
+				),
+				array(
+					'id'          	=> 'captcha_length',
+					'label'       	=> __( 'Length', 'svg-captcha' ),
+					'description' 	=> 'chars',
+					'type'        	=> 'number',
+					'placeholder' 	=> 'length',
+					'default'     	=> 4,
+				),
+				array(
+					'id'          	=> 'captcha_case_sensitive',
+					'label'       	=> __( 'Case sensitive', 'svg-captcha' ),
+					'description' 	=> '(AbCd != ABcD)',
+					'type'        	=> 'checkbox',
 				),
 			),
 		);
-		*/
+		
+		$settings['locations'] = array(
+			'title'       => __( 'Locations', 'svg-captcha' ),
+			'description' => __( 'Captcha locations', 'svg-captcha' ),
+			'fields'      => apply_filters('svgc_locations_settings',array(
+				array(
+					'id'          	=> 'enable_captcha_on_comments',
+					'label'       	=> __( 'Comments', 'svg-captcha' ),
+					'description' 	=> 'enable the captcha on comment form',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'enable_captcha_on_login',
+					'label'       	=> __( 'Login', 'svg-captcha' ),
+					'description' 	=> 'enable the captcha on login form',
+					'type'        	=> 'checkbox',
+				),
+			)),
+		);
+		
+		$settings['style'] = array(
+			'title'       => __( 'Style', 'svg-captcha' ),
+			'description' => __( 'Captcha appearance & style', 'svg-captcha' ),
+			'fields'      => array(
+				array(
+					'id'          	=> 'captcha_border',
+					'label'       	=> __( 'Border', 'svg-captcha' ),
+					'description' 	=> '',
+					'type'        	=> 'text',
+					'placeholder' 	=> 'inline css',
+					'default'     	=> 'border: 1px solid 0f0;',
+				),
+				array(
+					'id'          	=> 'captcha_width',
+					'label'       	=> __( 'Width', 'svg-captcha' ),
+					'description' 	=> 'px',
+					'type'        	=> 'number',
+					'placeholder' 	=> 'width',
+					'default'     	=> 150,
+				),
+				array(
+					'id'          	=> 'captcha_height',
+					'label'       	=> __( 'Height', 'svg-captcha' ),
+					'description' 	=> 'px',
+					'type'        	=> 'number',
+					'placeholder' 	=> 'height',
+					'default'     	=> 80,
+				),
+				/*
+				array(
+					'id'          	=> 'captcha_preview',
+					'label'       	=> __( 'Preview', 'svg-captcha' ),
+					'description' 	=> '',
+					'type'        	=> 'html',
+					'default'		=> $this->parent->svgc_reload_link(),
+				),
+				*/
+			),
+		);
+		
+		$settings['custom'] = array(
+			'title'       => __( 'Custom', 'svg-captcha' ),
+			'description' => __( 'Custome settings', 'svg-captcha' ),
+			'fields'      => array(
+				array(
+					'id'          	=> 'custom_captcha',
+					'label'       	=> __( 'Disable levels', 'svg-captcha' ),
+					'description' 	=> 'disable the difficulty levels and use the settings bellow',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'cg_glyph_offsetting',
+					'label'       	=> __( 'Offsetting', 'svg-captcha' ),
+					'description' 	=> 'use glyph offsetting as a obfuscation technique',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'cg_glyph_fragments',
+					'label'       	=> __( 'Fragments', 'svg-captcha' ),
+					'description' 	=> 'use glyph fragments to distort the image',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'cg_transformations',
+					'label'       	=> __( 'Transformations', 'svg-captcha' ),
+					'description' 	=> 'affine transformations',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'cg_approx_shapes',
+					'label'       	=> __( 'Approximation', 'svg-captcha' ),
+					'description' 	=> 'approximate shapes',
+					'type'        	=> 'checkbox',
+				),	
+				array(
+					'id'          	=> 'cg_change_degree',
+					'label'       	=> __( 'Degree', 'svg-captcha' ),
+					'description' 	=> 'change the degree of splines',
+					'type'        	=> 'checkbox',
+				),			
+				array(
+					'id'          	=> 'cg_split_curve',
+					'label'       	=> __( 'Curve', 'svg-captcha' ),
+					'description' 	=> 'split curves as a distortion technique',
+					'type'        	=> 'checkbox',
+				),		
+				array(
+					'id'          	=> 'cg_shapeify',
+					'label'       	=> __( 'Shapes', 'svg-captcha' ),
+					'description' 	=> 'inject randomly generated shapes',
+					'type'        	=> 'checkbox',
+				),				
+			),
+		);
 		
 		$settings = apply_filters( $this->parent->_token . '_settings_fields', $settings );
 
@@ -407,7 +430,7 @@ class SVG_Captcha_Settings {
 
 		// Build page HTML.
 		$html      = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'Plugin Settings', 'svg-captcha' ) . '</h2>' . "\n";
+			$html .= '<h2>' . __( 'Captcha Settings', 'svg-captcha' ) . '</h2>' . "\n";
 
 			$tab = '';
 		//phpcs:disable

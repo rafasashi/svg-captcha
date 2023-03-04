@@ -160,6 +160,7 @@ class SVG_Captcha {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ), 10, 1 );
 
 		// Load API for generic admin functions.
+		
 		if ( is_admin() ) {
 			
 			$this->admin = new SVG_Captcha_Admin_API();
@@ -227,8 +228,11 @@ class SVG_Captcha {
             
 			// Add custom captcha field to login form
             
-			add_action('login_form', array($this, 'svgc_login_form_defaults'));
-            add_filter('authenticate', array($this, 'svgc_validate_login_captcha'), 30, 3); // Validate captcha in login form.
+			add_action('login_form', array($this, 'svgc_login_form'),10,1); // using default page
+			
+			add_action('login_form_middle', array($this, 'svgc_login_form'),10,2); // using wp_login_form
+            
+			add_filter('authenticate', array($this, 'svgc_validate_login_captcha'), 30, 3); // Validate captcha in login form.
         });
 		
 		if( !empty($this->captcha_locations) ){
@@ -424,18 +428,22 @@ class SVG_Captcha {
 			
             $this->svgc_get_captcha();
 			
-			$texarea .='
+			$texarea .='<label for="svgc_answer">' . __('Captcha', 'svg-captcha') . '<span class="required"> *</span></label>';
 				
-				<label for="svgc_answer">' . __('Captcha', 'svg-captcha') . '<span class="required"> *</span></label>
+				$texarea .='<div style="width:100%;display:inline-block;">';
+					
+					$len = intval($this->captcha_options['captcha_length']);
 				
-				<div>
-					<input id="svgc_answer" name="svgc_answer" size="30" type="text" required="required" />
-				</div>
+					for($i = 0; $i < $len; $i++){
+						
+						$texarea .='<input id="svgc_input_'.($i+1).'" data-next="'.($i+2).'" style="width:30px;float:left;padding:0 6px;font-weight:bold;margin-right:5px;font-size:20px;" maxlength="1" type="text" name="svgc_answer[]" class="form-control" value="" required="required" oninput="a=this.attributes;n=parseInt(a[\'maxlength\'].value);if(this.value.length===n)document.getElementById(\'svgc_input_\'+a[\'data-next\'].value).focus()"/>';
+					}
+					
+				$texarea .='</div>';
 				
-				<div id="SVGCaptchaContainer" style="padding:10px 0px;display:inline-block;">' . $this->svg_output . '</div>
+				$texarea .= '<div id="SVGCaptchaContainer" style="padding:10px 0px;display:inline-block;">' . $this->svg_output . '</div>';
 				
-				' . $this->svgc_reload_link() . '
-			';
+				$texarea .= $this->svgc_reload_link();
         }
 		
         return $texarea;
@@ -445,12 +453,12 @@ class SVG_Captcha {
        
 		if( !is_admin() ) { /* Admins excluded. They should't be prevented from spamming... */
             
-			if (empty($_POST['svgc_answer']))
+			if( empty($_POST['svgc_answer']) || !is_array($_POST['svgc_answer']) )
                 
 				wp_die(__('Error: You need to enter the captcha.', 'svg-captcha'));
-
-            $answer = strip_tags($_POST['svgc_answer']);
-
+			
+			$answer = $this->sanitize_answer($_POST['svgc_answer']);
+			
             if (!$this->svgc_check($answer))/* Case insensitive comparing */
                 
 				wp_die(__('Error: Your supplied captcha is incorrect.', 'svg-captcha'));
@@ -458,48 +466,72 @@ class SVG_Captcha {
 		
         return $data;
     }
-
-    public function svgc_login_form_defaults() {
+	
+	private function sanitize_answer($answer=array()){
+		
+		if( is_array($answer) ){
+			
+			return sanitize_text_field(implode('',$_POST['svgc_answer']));
+		}
+		
+		return false;
+	}
+	
+    public function svgc_login_form($html,$args=array()) {
         
 		if( !is_admin() ) {
 			
             $this->svgc_get_captcha();
 			
             //Get and set any values already sent
-            $user_captcha = ( isset($_POST['svgc_answer']) ) ? $_POST['svgc_answer'] : '';
-            ?>
-
-            <div class="form-group">
+           
+			$html .='<p class="login-captcha">';
                 
-				<label for="svgc_answer" class="col-sm-2 control-label"><?php _e('Captcha', 'svg-captcha') ?></label>
+				$html .='<label for="svgc_answer">' . __('Captcha', 'svg-captcha') . '</label>';
                 
-				<input type="text" name="svgc_answer" id="svgc_answer" class="form-control" value="<?php echo esc_attr(stripslashes($user_captcha)); ?>" size="25" required="required"/>			
-                
-				<div id="SVGCaptchaContainer" style="padding: 10px 0px;display:inline-block;">
+				$html .='<div style="width:100%;display:inline-block;">';
 					
-					<?php echo $this->svg_output ?>
+					$len = intval($this->captcha_options['captcha_length']);
 				
-				</div>
-				
-				<?php echo $this->svgc_reload_link(); ?>
-               
-            </div>
+					for($i = 0; $i < $len; $i++){
+						
+						$html .='<input id="svgc_input_'.($i+1).'" data-next="'.($i+2).'" style="width:30px;float:left;padding:0 6px;font-weight:bold;margin-right:5px;font-size:20px;" maxlength="1" type="text" name="svgc_answer[]" class="form-control" value="" required="required" oninput="a=this.attributes;n=parseInt(a[\'maxlength\'].value);if(this.value.length===n)document.getElementById(\'svgc_input_\'+a[\'data-next\'].value).focus()"/>';
+					}
+					
+				$html .='</div>';
 
-            <?php
+				$html .='<div id="SVGCaptchaContainer" style="padding: 10px 0px;display:inline-block;">';
+					
+					$html .= $this->svg_output;
+				
+				$html .='</div>';
+				
+				$html .= $this->svgc_reload_link();
+               
+            $html .='</p>';
         }
+		
+		if( isset($args['echo']) && $args['echo'] === false ){
+			
+			return $html;
+		}
+		else{
+			
+			echo $html;
+		}
     }
 
     public function svgc_validate_login_captcha($user, $username, $password) {
         
 		if( !is_admin() ) { /* Whenever a admin tries to login -.- */
             
-			if (empty($_POST['svgc_answer'])) {
+			if ( empty($_POST['svgc_answer']) || !is_array($_POST['svgc_answer']) ) {
                 
 				return new WP_Error('invalid_captcha', __("You need to enter a captcha in order to login.", 'svg-captcha'));
             } 
 			else {
                 
-				$answer = strip_tags($_POST['svgc_answer']);
+				$answer = $this->sanitize_answer($_POST['svgc_answer']);
 
                 if (!$this->svgc_check($answer, $solution)) {/* Case insensitive comparing */
                     
@@ -650,7 +682,7 @@ class SVG_Captcha {
     }
 
     public function svgc_captcha_reload_admin() {
-        wp_register_script('captcha-reload-admin', esc_url( $this->assets_url ) . 'js/reload_captcha_admin.js', array('jquery'));
+        wp_register_script('captcha-reload-admin', esc_url( $this->assets_url ) . 'js/reload_captcha.js', array('jquery'));
         wp_enqueue_script('captcha-reload-admin');
     }
 
@@ -709,12 +741,12 @@ class SVG_Captcha {
 
     public function captcha_preview_callback($d) {
         $this->svgc_get_captcha();
-        print '<figure id="SVGCaptchaPreviewContainer"' . $this->svg_output . '<figcaption>The solution for the generated captcha is <strong style="color:red">' . $this->captcha_answer . '</strong></figcaption></div>';
+        print '<figure id="SVGCaptchaContainer"' . $this->svg_output . '<figcaption>The solution for the generated captcha is <strong style="color:red">' . $this->captcha_answer . '</strong></figcaption></div>';
     }
 
     public function custom_captcha_preview_callback($d) {
         $this->svgc_get_captcha();
-        print '<figure id="SVGCaptchaPreviewContainer"' . $this->svg_output . '<figcaption>The solution for the generated captcha is <strong style="color:red">' . $this->captcha_answer . '</strong></figcaption></div>';
+        print '<figure id="SVGCaptchaContainer"' . $this->svg_output . '<figcaption>The solution for the generated captcha is <strong style="color:red">' . $this->captcha_answer . '</strong></figcaption></div>';
     }
 
     /**

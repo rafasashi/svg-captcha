@@ -218,6 +218,7 @@ class SVG_Captcha_Settings {
 					'description' 	=> 'chars',
 					'type'        	=> 'number',
 					'placeholder' 	=> 'length',
+					'max' 			=> 8,
 					'default'     	=> 4,
 				),
 				array(

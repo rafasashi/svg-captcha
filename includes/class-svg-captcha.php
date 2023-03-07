@@ -216,13 +216,14 @@ class SVG_Captcha {
 		add_action('wp_ajax_nopriv_svgc_captcha_reload', array($this, 'svgc_captcha_reload'));
         add_action('wp_ajax_svgc_captcha_reload', array($this, 'svgc_captcha_reload'));
 		
-		add_filter('svgc_location_enable_captcha_on_comments',function(){
-			
-			// Add captcha to comment form
+		add_filter('svgc_location_enable_captcha_on_register',function(){
             
-			add_filter('comment_form_field_comment', array($this, 'svgc_form_input_defaults')); // Add a filter to verify if the captcha in the comment section was correct.
-			add_filter('preprocess_comment', array($this, 'svgc_validate_form_captcha'));
-        });
+			// Add custom captcha field to login form
+            
+			add_action('register_form', array($this, 'svgc_render_form_input'),9999);
+      
+			add_action('registration_errors', array($this, 'svgc_validate_register_captcha'),10,3);
+		});
 		
 		add_filter('svgc_location_enable_captcha_on_login',function(){
             
@@ -233,6 +234,14 @@ class SVG_Captcha {
 			add_action('login_form_middle', array($this, 'svgc_login_form'),10,2); // using wp_login_form
             
 			add_filter('authenticate', array($this, 'svgc_validate_login_captcha'), 30, 3); // Validate captcha in login form.
+        });
+		
+		add_filter('svgc_location_enable_captcha_on_comments',function(){
+			
+			// Add captcha to comment form
+            
+			add_filter('comment_form_field_comment', array($this, 'svgc_form_input')); // Add a filter to verify if the captcha in the comment section was correct.
+			add_filter('preprocess_comment', array($this, 'svgc_validate_form_captcha'));
         });
 		
 		if( !empty($this->captcha_locations) ){
@@ -422,36 +431,63 @@ class SVG_Captcha {
      * @param type $default
      * @return string
      */
-    public function svgc_form_input_defaults($texarea) {
+    public function svgc_form_input($html='') {
 		
         if( !is_admin() ) {
 			
             $this->svgc_get_captcha();
 			
-			$texarea .='<label for="svgc_answer">' . __('Captcha', 'svg-captcha') . '<span class="required"> *</span></label>';
+			$html .='<label for="svgc_answer">' . __('Captcha', 'svg-captcha') . '<span class="required"> *</span></label>';
 				
-				$texarea .='<div style="width:100%;display:inline-block;">';
+				$html .='<div style="width:100%;display:inline-block;">';
 					
 					$len = intval($this->captcha_options['captcha_length']);
 				
 					for($i = 0; $i < $len; $i++){
 						
-						$texarea .='<input id="svgc_input_'.($i+1).'" data-next="'.($i+2).'" style="width:30px;float:left;padding:0 6px;font-weight:bold;margin-right:5px;font-size:20px;" maxlength="1" type="text" name="svgc_answer[]" class="form-control" value="" required="required" oninput="a=this.attributes;n=parseInt(a[\'maxlength\'].value);if(this.value.length===n)document.getElementById(\'svgc_input_\'+a[\'data-next\'].value).focus()"/>';
+						$html .='<input id="svgc_input_'.($i+1).'" data-next="'.($i+2).'" style="width:30px;float:left;padding:0 6px;font-weight:bold;margin-right:5px;font-size:20px;" maxlength="1" type="text" name="svgc_answer[]" class="form-control" value="" required="required" oninput="a=this.attributes;n=parseInt(a[\'maxlength\'].value);if(this.value.length===n)document.getElementById(\'svgc_input_\'+a[\'data-next\'].value).focus()"/>';
 					}
 					
-				$texarea .='</div>';
+				$html .='</div>';
 				
-				$texarea .= '<div id="SVGCaptchaContainer" style="padding:10px 0px;display:inline-block;">' . $this->svg_output . '</div>';
+				$html .= '<div id="SVGCaptchaContainer" style="padding:10px 0px;display:inline-block;">' . $this->svg_output . '</div>';
 				
-				$texarea .= $this->svgc_reload_link();
+				$html .= $this->svgc_reload_link();
         }
 		
-        return $texarea;
+        return $html;
+    }
+	
+	public function svgc_render_form_input($html=''){
+		
+		echo $this->svgc_form_input($html);
+	}
+	
+    public function svgc_validate_register_captcha($errors, $sanitized_user_login, $user_email) {
+		
+		if( !is_admin() ) {
+            
+			if( empty($_POST['svgc_answer']) || !is_array($_POST['svgc_answer']) ) {
+                
+				$errors->add('invalid_captcha', __( '<strong>ERROR</strong>: You need to enter a captcha', 'svg-captcha' ) );
+            } 
+			else {
+                
+				$answer = $this->sanitize_answer($_POST['svgc_answer']);
+
+                if( !$this->svgc_check($answer) ) {
+                    
+					$errors->add('invalid_captcha', __( '<strong>ERROR</strong>: Invalid captcha, try again', 'svg-captcha' ) );
+				}
+            }
+        }
+		
+		return $errors;
     }
 
     public function svgc_validate_form_captcha($data){
        
-		if( !is_admin() ) { /* Admins excluded. They should't be prevented from spamming... */
+		if( !is_admin() ) {
             
 			if( empty($_POST['svgc_answer']) || !is_array($_POST['svgc_answer']) )
                 
@@ -459,10 +495,11 @@ class SVG_Captcha {
 			
 			$answer = $this->sanitize_answer($_POST['svgc_answer']);
 			
-            if (!$this->svgc_check($answer))/* Case insensitive comparing */
+            if (!$this->svgc_check($answer)){
                 
 				wp_die(__('Error: Your supplied captcha is incorrect.', 'svg-captcha'));
-        }
+			}
+		}
 		
         return $data;
     }
@@ -520,7 +557,7 @@ class SVG_Captcha {
 			echo $html;
 		}
     }
-
+	
     public function svgc_validate_login_captcha($user, $username, $password) {
         
 		if( !is_admin() ) { /* Whenever a admin tries to login -.- */
@@ -533,7 +570,7 @@ class SVG_Captcha {
                 
 				$answer = $this->sanitize_answer($_POST['svgc_answer']);
 
-                if (!$this->svgc_check($answer, $solution)) {/* Case insensitive comparing */
+                if (!$this->svgc_check($answer)) {
                     
 					return new WP_Error('invalid_captcha', __("Your supplied captcha is incorrect.", 'svg-captcha'));
                 } 
@@ -551,14 +588,19 @@ class SVG_Captcha {
      * https://codex.wordpress.org/AJAX_in_Plugins
      */
     public function svgc_reload_link() {
+		
         return '<a id="svgc-reload" style="cursor:pointer;display:inline-block;width:15px;height:15px;margin-left:5px;"><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 118.04 122.88"><path d="M16.08,59.26A8,8,0,0,1,0,59.26a59,59,0,0,1,97.13-45V8a8,8,0,1,1,16.08,0V33.35a8,8,0,0,1-8,8L80.82,43.62a8,8,0,1,1-1.44-15.95l8-.73A43,43,0,0,0,16.08,59.26Zm22.77,19.6a8,8,0,0,1,1.44,16l-10.08.91A42.95,42.95,0,0,0,102,63.86a8,8,0,0,1,16.08,0A59,59,0,0,1,22.3,110v4.18a8,8,0,0,1-16.08,0V89.14h0a8,8,0,0,1,7.29-8l25.31-2.3Z"/></svg></a>';
     }
 
     public function svgc_captcha_reload() {
+		
         if ($_REQUEST["reload"] == "reload") {
-            $this->svgc_get_captcha();
-            echo $this->svg_output;
+            
+			$this->svgc_get_captcha();
+           
+			echo $this->svg_output;
         }
+		
         die();
     }
 

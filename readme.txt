@@ -7,7 +7,7 @@ License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Requires WP: 6.1.1
 Requires PHP: 6.0
-Stable Tag: 1.0.2
+Stable Tag: 1.0.5
 Tested up to: 6.1.1
 
 Validate your forms with a self hosted SVG Captcha.
@@ -25,8 +25,10 @@ For quicker support on this plugin go to: [https://code.recuweb.com/support/foru
 * DIFFICULTY LEVEL – Easy, medium or hard
 * CUSTOM STYLE – CSS border, height & width
 * CUSTOM CAPTCHA – Character length, random shapes, offsetting, distortion...
+
+* REGISTRATION FORM – Add the captcha in the registration form
+* LOGIN FORM – Add the captcha in the login form
 * COMMENT FORM – Add the captcha in the comment form
-* LOGIN FORM – Add the captcha in the core login form
 
 = Localization =
 

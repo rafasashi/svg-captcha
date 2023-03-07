@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SVG Captcha
  * Plugin URI: https://code.recuweb.com/get/svg-captcha/
- * Version: 1.0.4
+ * Version: 1.0.5
  * Description: Validate your forms with a self hosted SVG Captcha.
  * Author: rafasashi
  * Author URI: https://code.recuweb.com

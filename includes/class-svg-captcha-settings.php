@@ -235,15 +235,21 @@ class SVG_Captcha_Settings {
 			'description' => __( 'Captcha locations', 'svg-captcha' ),
 			'fields'      => apply_filters('svgc_locations_settings',array(
 				array(
-					'id'          	=> 'enable_captcha_on_comments',
-					'label'       	=> __( 'Comments', 'svg-captcha' ),
-					'description' 	=> 'enable the captcha on comment form',
+					'id'          	=> 'enable_captcha_on_register',
+					'label'       	=> __( 'Registration', 'svg-captcha' ),
+					'description' 	=> 'enable the captcha on registration form',
 					'type'        	=> 'checkbox',
 				),
 				array(
 					'id'          	=> 'enable_captcha_on_login',
 					'label'       	=> __( 'Login', 'svg-captcha' ),
 					'description' 	=> 'enable the captcha on login form',
+					'type'        	=> 'checkbox',
+				),
+				array(
+					'id'          	=> 'enable_captcha_on_comments',
+					'label'       	=> __( 'Comments', 'svg-captcha' ),
+					'description' 	=> 'enable the captcha on comment form',
 					'type'        	=> 'checkbox',
 				),
 			)),

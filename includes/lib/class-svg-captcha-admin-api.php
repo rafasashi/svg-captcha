@@ -218,10 +218,11 @@ class SVG_Captcha_Admin_API {
 		}
 
 		if ( ! $echo ) {
-			return $html;
+			
+			return wp_kses_normalize_entities($html);
 		}
 
-		echo $html; //phpcs:ignore
+		echo wp_kses_normalize_entities($html); //phpcs:ignore
 
 	}
 

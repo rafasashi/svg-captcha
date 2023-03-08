@@ -1292,7 +1292,7 @@ EOD;
             }
             error_reporting(E_ALL);
             echo "Memory peak usage: " . memory_get_peak_usage() . " And usage now" . memory_get_usage() . " <br />";
-            echo '[Debug] - ' . $msg . '<br />';
+            echo '[Debug] - ' . wp_kses_normalize_entities($msg) . '<br />';
         }
     }
 
@@ -1303,7 +1303,7 @@ EOD;
      */
     public static function V(string $msg) {
         if (self::VERBOSE) {
-            echo '[i] - ' . $msg . '<br />';
+            echo '[i] - ' . wp_kses_normalize_entities($msg) . '<br />';
         }
     }
 

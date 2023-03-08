@@ -361,23 +361,28 @@ class SVG_Captcha_Settings {
 	 * @return void
 	 */
 	public function register_settings() {
+		
 		if ( is_array( $this->settings ) ) {
 
 			// Check posted/selected tab.
-			//phpcs:disable
+			
 			$current_section = '';
-			if ( isset( $_POST['tab'] ) && $_POST['tab'] ) {
-				$current_section = $_POST['tab'];
-			} else {
-				if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-					$current_section = $_GET['tab'];
-				}
+			
+			if( isset( $_POST['tab'] ) ) {
+				
+				$current_section = sanitize_text_field($_POST['tab']);
+			} 
+			elseif( isset( $_GET['tab'] ) ) {
+					
+				$current_section = sanitize_text_field($_GET['tab']);
 			}
+			
 			//phpcs:enable
 
 			foreach ( $this->settings as $section => $data ) {
 
 				if ( $current_section && $current_section !== $section ) {
+					
 					continue;
 				}
 
@@ -440,9 +445,12 @@ class SVG_Captcha_Settings {
 			$html .= '<h2>' . __( 'Captcha Settings', 'svg-captcha' ) . '</h2>' . "\n";
 
 			$tab = '';
+			
 		//phpcs:disable
+		
 		if ( isset( $_GET['tab'] ) && $_GET['tab'] ) {
-			$tab .= $_GET['tab'];
+			
+			$tab .= sanitize_text_field($_GET['tab']);
 		}
 		//phpcs:enable
 

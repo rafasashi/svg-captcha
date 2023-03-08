@@ -508,7 +508,7 @@ class SVG_Captcha {
 		
 		if( is_array($answer) ){
 			
-			return sanitize_text_field(implode('',$_POST['svgc_answer']));
+			return sanitize_text_field(implode('',$answer));
 		}
 		
 		return false;
@@ -611,7 +611,7 @@ class SVG_Captcha {
         
 		if( !empty($_COOKIE['svgc_tok']) ){
 		
-			$this->captcha_answer = get_transient('svgc_session_' . $_COOKIE['svgc_tok']);
+			$this->captcha_answer = get_transient('svgc_session_' . sanitize_text_field($_COOKIE['svgc_tok']));
 		
 			if ($this->case_sensitive) {
 				
@@ -689,7 +689,7 @@ class SVG_Captcha {
 		
 		if( !empty($_COOKIE['svgc_tok']) ){
 		
-			set_transient('svgc_session_' . $_COOKIE['svgc_tok'],$this->captcha_answer, 60 * 60 );
+			set_transient('svgc_session_' . sanitize_text_field($_COOKIE['svgc_tok']),$this->captcha_answer, 60 * 60 );
 		}
 	}
 

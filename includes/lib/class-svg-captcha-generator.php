@@ -1286,11 +1286,9 @@ EOD;
      * @param string $msg
      */
     public static function D(string $msg) {
-        if (self::DEBUG) {
-            if (ini_get('display_errors') != 'On') {
-                ini_set('display_errors', 'On');
-            }
-            error_reporting(E_ALL);
+        
+		if(self::DEBUG) {
+			
             echo "Memory peak usage: " . memory_get_peak_usage() . " And usage now" . memory_get_usage() . " <br />";
             echo '[Debug] - ' . wp_kses_normalize_entities($msg) . '<br />';
         }
@@ -1302,8 +1300,10 @@ EOD;
      * @param string $msg
      */
     public static function V(string $msg) {
-        if (self::VERBOSE) {
-            echo '[i] - ' . wp_kses_normalize_entities($msg) . '<br />';
+        
+		if (self::VERBOSE) {
+            
+			echo '[i] - ' . wp_kses_normalize_entities($msg) . '<br />';
         }
     }
 

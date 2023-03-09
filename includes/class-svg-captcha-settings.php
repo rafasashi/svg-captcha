@@ -429,8 +429,10 @@ class SVG_Captcha_Settings {
 	 * @return void
 	 */
 	public function settings_section( $section ) {
+		
 		$html = '<p> ' . $this->settings[ $section['id'] ]['description'] . '</p>' . "\n";
-		echo $html; //phpcs:ignore
+		
+		echo wp_kses_normalize_entities($html); //phpcs:ignore
 	}
 
 	/**
@@ -504,7 +506,7 @@ class SVG_Captcha_Settings {
 			$html         .= '</form>' . "\n";
 		$html             .= '</div>' . "\n";
 
-		echo $html; //phpcs:ignore
+		echo wp_kses_normalize_entities($html); //phpcs:ignore
 	}
 
 	/**

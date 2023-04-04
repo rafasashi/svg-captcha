@@ -18,6 +18,7 @@ class SVG_Captcha_Admin_API {
 	 * Constructor function
 	 */
 	public function __construct() {
+		
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 10, 1 );
 	}
 
@@ -345,15 +346,16 @@ class SVG_Captcha_Admin_API {
 	 */
 	public function save_meta_boxes( $post_id = 0 ) {
 
-		if ( ! $post_id ) {
+		if ( !$post_id ){
+			
 			return;
 		}
 
 		$post_type = get_post_type( $post_id );
 
 		$fields = apply_filters( $post_type . '_custom_fields', array(), $post_type );
-
-		if ( ! is_array( $fields ) || 0 === count( $fields ) ) {
+		
+		if ( !is_array( $fields ) || 0 === count( $fields ) ) {
 			
 			return;
 		}
@@ -362,7 +364,7 @@ class SVG_Captcha_Admin_API {
 			
 			if ( isset( $_REQUEST[ $field['id'] ] ) ) { //phpcs:ignore
 				
-				update_post_meta( $post_id, $field['id'], $this->validate_input( sanitize_text_field($_REQUEST[$field['id']]), $field['type'] ) ); //phpcs:ignore
+				update_post_meta( $post_id, $field['id'], $this->validate_input( $_REQUEST[$field['id']], $field['type'] ) ); //phpcs:ignore
 			} 
 			else {
 				

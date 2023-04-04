@@ -362,13 +362,16 @@ class SVG_Captcha_Admin_API {
 
 		foreach ( $fields as $field ) {
 			
-			if ( isset( $_REQUEST[ $field['id'] ] ) ) { //phpcs:ignore
-				
-				update_post_meta( $post_id, $field['id'], $this->validate_input( $_REQUEST[$field['id']], $field['type'] ) ); //phpcs:ignore
-			} 
-			else {
-				
-				update_post_meta( $post_id, $field['id'], '' );
+			if( !empty($field['id']) ){
+			
+				if ( isset( $_REQUEST[ $field['id'] ] ) ) { //phpcs:ignore
+					
+					update_post_meta( $post_id, $field['id'], $this->validate_input( $_REQUEST[$field['id']], $field['type'] ) ); //phpcs:ignore
+				} 
+				else{
+					
+					update_post_meta( $post_id, $field['id'], '' );
+				}
 			}
 		}
 	}

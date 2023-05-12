@@ -216,13 +216,17 @@ class SVG_Captcha {
 		add_action('wp_ajax_nopriv_svgc_captcha_reload', array($this, 'svgc_captcha_reload'));
         add_action('wp_ajax_svgc_captcha_reload', array($this, 'svgc_captcha_reload'));
 		
+		add_action('svgc_render_form_input', array($this,'svgc_render_form_input'),9999);
+		
+		add_action('svgc_validate_register_captcha', array($this,'svgc_validate_register_captcha'),9999,3);
+		
 		add_filter('svgc_location_enable_captcha_on_register',function(){
             
 			// Add custom captcha field to login form
             
-			add_action('register_form', array($this, 'svgc_render_form_input'),9999);
-      
-			add_action('registration_errors', array($this, 'svgc_validate_register_captcha'),10,3);
+			add_action('register_form', array($this,'svgc_render_form_input'),9999);
+			
+			add_action('registration_errors', array($this,'svgc_validate_register_captcha'),10,3);
 		});
 		
 		add_filter('svgc_location_enable_captcha_on_login',function(){
@@ -230,7 +234,7 @@ class SVG_Captcha {
 			// Add custom captcha field to login form
             
 			add_action('login_form', array($this, 'svgc_login_form'),10,1); // using default page
-			
+
 			add_action('login_form_middle', array($this, 'svgc_login_form'),10,2); // using wp_login_form
             
 			add_filter('authenticate', array($this, 'svgc_validate_login_captcha'), 30, 3); // Validate captcha in login form.
@@ -241,6 +245,7 @@ class SVG_Captcha {
 			// Add captcha to comment form
             
 			add_filter('comment_form_field_comment', array($this, 'svgc_form_input')); // Add a filter to verify if the captcha in the comment section was correct.
+			
 			add_filter('preprocess_comment', array($this, 'svgc_validate_form_captcha'));
         });
 		
@@ -469,7 +474,7 @@ class SVG_Captcha {
             
 			if( empty($_POST['svgc_answer']) || !is_array($_POST['svgc_answer']) ) {
                 
-				$errors->add('invalid_captcha', __( '<strong>ERROR</strong>: You need to enter a captcha', 'svg-captcha' ) );
+				$errors->add('invalid_captcha', __( 'You need to enter a captcha', 'svg-captcha' ) );
             } 
 			else {
                 
@@ -477,7 +482,7 @@ class SVG_Captcha {
 
                 if( !$this->svgc_check($answer) ) {
                     
-					$errors->add('invalid_captcha', __( '<strong>ERROR</strong>: Invalid captcha, try again', 'svg-captcha' ) );
+					$errors->add('invalid_captcha', __( 'Invalid captcha, try again', 'svg-captcha' ) );
 				}
             }
         }

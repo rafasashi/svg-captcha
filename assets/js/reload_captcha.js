@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
     
-	$("#svgc-reload").click(function() {
+	$("#svgc-reload").on('click',function() {
 		
 		data = {
 			

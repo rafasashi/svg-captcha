@@ -1,25 +1,37 @@
 jQuery(document).ready(function($) {
     
-	$("#svgc-reload").on('click',function() {
-		
-		data = {
+    function load_svgc_captcha(){
+        
+		$("#SVGCaptchaContainer").load(captchaObject.ajaxurl,{
 			
-			action : 'svgc_captcha_reload', // Same as php callback for wp_ajax_nopriv
+			action : 'svgc_captcha_reload',
 			reload : 'reload'
-		};
-		
-		$("#SVGCaptchaContainer").load(captchaObject.ajaxurl, data, function(response, status, xhr) {
-			
-			if (status == "error") {
+            
+		},function(response, status, xhr) {
+            
+			$("#SVGCaptchaLoader").css('display','none');
+            
+            $("#svgc-reload").css('display','inline-block');
+            
+			if( status == "error" ){
 				
 				var msg = "Sorry but there was an error: ";
 				
 				//console.log(msg + xhr.status + " " + xhr.statusText);
 			} 
-			else{
-				
-				//console.log(msg + xhr.status + " " + xhr.statusText);
-			}
 		});
+    }
+    
+    load_svgc_captcha();
+    
+	$("#svgc-reload").on('click',function() {
+		
+        $("#svgc-reload").css('display','none');
+        
+        $("#SVGCaptchaContainer svg").css('display','none');
+       
+        $("#SVGCaptchaLoader").css('display','inline-block');
+        
+        load_svgc_captcha();
 	});
 });

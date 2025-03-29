@@ -346,7 +346,7 @@ class SVG_Captcha_Admin_API {
 	 */
 	public function save_meta_boxes( $post_id = 0 ) {
 
-		if( !$post_id || ( isset($_POST['_inline_edit']) && wp_verify_nonce($_POST['_inline_edit'],'inlineeditnonce') ) ){
+		if( !$post_id || isset($_POST['_inline_edit']) || isset($_GET['bulk_edit']) ){
 			
 			return;
 		}
